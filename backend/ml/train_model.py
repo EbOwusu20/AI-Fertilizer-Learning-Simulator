@@ -26,10 +26,18 @@ df = pd.read_csv("../dataset/fertilizer_dataset.csv")
 X = df.drop(
     columns=[
         "yield_ton_per_ha",
+
+        # Outputs
         "profit",
         "revenue",
         "environmental_score",
-        "sustainability"
+        "sustainability",
+
+        # Calculated values (not user inputs)
+        "fertilizer_cost",
+        "labour_cost",
+        "transport_cost",
+        "total_cost"
     ]
 )
 
@@ -250,3 +258,4 @@ joblib.dump(pipeline, "../models/yield_prediction_model.pkl")
 
 
 print("\n✅ Model saved successfully!")
+print(X.columns.tolist())
