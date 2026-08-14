@@ -4,10 +4,12 @@ import { Link, useNavigate } from "react-router-dom";
 import AuthCard from "./AuthCard";
 import InputField from "./InputField";
 import PasswordInput from "./PasswordInput";
+import { useAuth } from "../../context/AuthContext";
 
 const LoginForm = () => {
-
   const navigate = useNavigate();
+
+  const { login } = useAuth();
 
   const [formData, setFormData] = useState({
     email: "",
@@ -16,6 +18,9 @@ const LoginForm = () => {
 
   const [rememberMe, setRememberMe] = useState(false);
 
+  const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
 
@@ -23,29 +28,42 @@ const LoginForm = () => {
       ...prev,
       [name]: value,
     }));
+
+    // Clear error when user starts typing again
+    if (error) {
+      setError("");
+    }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    console.log("Login Data:", {
-      ...formData,
-      rememberMe,
-    });
+    setError("");
+    setIsLoading(true);
 
-    // Temporary frontend navigation.
-    // Backend authentication will replace this later.
-    navigate("/dashboard");
+    try {
+      await login(
+        formData.email,
+        formData.password
+      );
+
+      // Login successful
+      navigate("/dashboard");
+    } catch (err) {
+      setError(
+        err.message || "Login failed. Please try again."
+      );
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
     <AuthCard>
-
       <form
         onSubmit={handleSubmit}
         className="space-y-5"
       >
-
         <InputField
           label="Email Address"
           name="email"
@@ -61,9 +79,7 @@ const LoginForm = () => {
         />
 
         <div className="flex items-center justify-between">
-
           <label className="flex items-center gap-2 text-sm text-gray-600">
-
             <input
               type="checkbox"
               checked={rememberMe}
@@ -74,7 +90,6 @@ const LoginForm = () => {
             />
 
             Remember me
-
           </label>
 
           <Link
@@ -83,11 +98,17 @@ const LoginForm = () => {
           >
             Forgot password?
           </Link>
-
         </div>
+
+        {error && (
+          <div className="rounded-lg bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-600">
+            {error}
+          </div>
+        )}
 
         <button
           type="submit"
+          disabled={isLoading}
           className="
             w-full
             bg-green-600
@@ -97,13 +118,14 @@ const LoginForm = () => {
             font-semibold
             hover:bg-green-700
             transition
+            disabled:opacity-60
+            disabled:cursor-not-allowed
           "
         >
-          Login
+          {isLoading ? "Signing in..." : "Login"}
         </button>
 
         <div className="relative my-6">
-
           <div className="border-t" />
 
           <span
@@ -120,29 +142,9 @@ const LoginForm = () => {
           >
             OR
           </span>
-
         </div>
 
-        <button
-          type="button"
-          onClick={() => navigate("/dashboard")}
-          className="
-            w-full
-            border
-            border-gray-300
-            text-gray-700
-            py-3
-            rounded-xl
-            font-medium
-            hover:bg-gray-50
-            transition
-          "
-        >
-          Continue as Guest
-        </button>
-
-        <p className="text-center text-sm text-gray-500 pt-2">
-
+        <p className="text-center text-sm text-gray-500">
           Don't have an account?{" "}
 
           <Link
@@ -151,11 +153,8 @@ const LoginForm = () => {
           >
             Create account
           </Link>
-
         </p>
-
       </form>
-
     </AuthCard>
   );
 };

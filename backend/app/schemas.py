@@ -12,7 +12,7 @@ class PredictionRequest(BaseModel):
     soil_type: str
     soil_ph: float
     organic_matter: float
-    fertility_index: int
+    fertility_index: float
     soil_moisture: int
     drainage: str
 

@@ -31,3 +31,8 @@ typing-inspection==0.4.2
 typing_extensions==4.16.0
 tzdata==2026.3
 uvicorn==0.52.1
+sqlalchemy
+passlib[bcrypt]
+python-jose[cryptography]
+google-auth
+python-dotenv

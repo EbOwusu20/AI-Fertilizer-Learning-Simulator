@@ -1,10 +1,25 @@
 from fastapi import FastAPI
 
+from dotenv import load_dotenv
+
+from fastapi.middleware.cors import CORSMiddleware
+
 from app.schemas import PredictionRequest
 
 from app.ml_service import predict_yield
 
 from app.optimizer import optimize_fertilizer
+
+from fastapi import Depends
+
+
+from app.database import Base, engine
+
+from app.routers.auth import router as auth_router
+
+from app.auth.dependencies import get_current_user
+from app.models import User
+
 
 
 from app.calculator import (
@@ -14,14 +29,29 @@ from app.calculator import (
     generate_advice
 )
 
+load_dotenv()
+
+Base.metadata.create_all(bind=engine)
+
+
 
 app = FastAPI(
     title="AI Fertilizer Simulator"
-) 
+)
+
+app.include_router(auth_router)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],          
+    allow_credentials=True,
+    allow_methods=["*"],          
+    allow_headers=["*"],
+)
 
 
 @app.post("/predict")
-def predict(data: PredictionRequest):
+def predict(data: PredictionRequest , current_user: User = Depends(get_current_user)):
 
     prediction = predict_yield(data.model_dump())
     optimization_result = optimize_fertilizer(data.model_dump())
