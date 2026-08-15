@@ -2,21 +2,22 @@ import Card from "../common/Card";
 
 const ProfileInfo = ({ user }) => {
     const fields = [
-        ["Full Name", user?.name || "Not provided"],
-        ["Email", user?.email || "Not provided"],
-        [
-            "Authentication",
-            user?.auth_provider === "google"
-                ? "Google"
-                : "Email & Password",
-        ],
-        [
-            "Member Since",
-            user?.created_at
-                ? new Date(user.created_at).toLocaleDateString()
-                : "Not available",
-        ],
-    ];
+    ["Full Name", user?.name || "Not provided"],
+    ["Email", user?.email || "Not provided"],
+    ["Institution", user?.institution || "Not provided"],
+    [
+        "Authentication",
+        user?.auth_provider === "google"
+            ? "Google"
+            : "Email & Password",
+    ],
+    [
+        "Member Since",
+        user?.created_at
+            ? new Date(user.created_at).toLocaleDateString()
+            : "Not available",
+    ],
+];
 
     return (
         <Card className="p-6">

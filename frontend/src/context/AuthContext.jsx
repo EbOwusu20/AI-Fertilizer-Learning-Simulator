@@ -85,7 +85,12 @@ export function AuthProvider({ children }) {
     setUser(currentUser);
   }
 
-  async function register(name, email, password) {
+  async function register(
+    name,
+    institution,
+    email,
+    password
+  ) {
     const response = await fetch(`${API_URL}/auth/register`, {
       method: "POST",
       headers: {
@@ -93,6 +98,7 @@ export function AuthProvider({ children }) {
       },
       body: JSON.stringify({
         name,
+        institution,
         email,
         password,
       }),
@@ -101,26 +107,44 @@ export function AuthProvider({ children }) {
     const data = await response.json();
 
     if (!response.ok) {
-  let message = "Registration failed.";
+      throw new Error(
+        data.detail || "Registration failed."
+      );
+    }
 
-  if (typeof data.detail === "string") {
-    message = data.detail;
-  } else if (Array.isArray(data.detail)) {
-    message = data.detail
-      .map((error) => {
-        const field = error.loc?.[error.loc.length - 1];
+    localStorage.setItem(
+      "access_token",
+      data.access_token
+    );
 
-        if (error.type === "string_too_short") {
-          return `${field} must be at least ${error.ctx?.min_length} characters long.`;
-        }
+    setToken(data.access_token);
 
-        return error.msg || "Invalid input.";
-      })
-      .join(" ");
+    const currentUser = await fetchCurrentUser(
+      data.access_token
+    );
+
+    setUser(currentUser);
   }
 
-  throw new Error(message);
-}
+  // Google Sign-In
+  async function googleLogin(credential) {
+    const response = await fetch(`${API_URL}/auth/google`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        credential,
+      }),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(
+        data.detail || "Google Sign-In failed."
+      );
+    }
 
     localStorage.setItem(
       "access_token",
@@ -151,6 +175,7 @@ export function AuthProvider({ children }) {
         isAuthenticated: Boolean(user && token),
         login,
         register,
+        googleLogin,
         logout,
       }}
     >

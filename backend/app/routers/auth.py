@@ -48,13 +48,14 @@ def register(
             status_code=status.HTTP_409_CONFLICT,
             detail="An account with this email already exists.",
         )
-
+    
     user = User(
-        name=data.name.strip(),
-        email=email,
-        password_hash=hash_password(data.password),
-        auth_provider="email",
-    )
+    name=data.name.strip(),
+    institution=data.institution.strip(),
+    email=email,
+    password_hash=hash_password(data.password),
+    auth_provider="email",
+)
 
     db.add(user)
     db.commit()

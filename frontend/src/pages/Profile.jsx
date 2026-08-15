@@ -27,25 +27,25 @@ const Profile = () => {
 
     return (
         <div className="space-y-6">
+            <PageHeader
+                title="My Profile"
+                subtitle="View and manage your account information"
+            />
 
-            <div>
-                <PageHeader
-                    title="My Profile"
-                    subtitle="View your account information"
-                />
-            </div>
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
 
-            <div className="grid lg:grid-cols-3 gap-8">
+                {/* Profile Avatar */}
                 <AvatarCard
                     avatar={user.profile_image}
                     name={user.name}
                 />
-            </div>
 
-            <div className="lg:col-span-2">
-                <ProfileInfo user={user} />
-            </div>
+                {/* Profile Information */}
+                <div className="lg:col-span-2">
+                    <ProfileInfo user={user} />
+                </div>
 
+            </div>
         </div>
     );
 };

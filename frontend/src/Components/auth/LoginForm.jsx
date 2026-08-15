@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { GoogleLogin } from "@react-oauth/google";
 
 import AuthCard from "./AuthCard";
 import InputField from "./InputField";
@@ -9,7 +10,7 @@ import { useAuth } from "../../context/AuthContext";
 const LoginForm = () => {
   const navigate = useNavigate();
 
-  const { login } = useAuth();
+  const { login, googleLogin } = useAuth();
 
   const [formData, setFormData] = useState({
     email: "",
@@ -57,6 +58,11 @@ const LoginForm = () => {
       setIsLoading(false);
     }
   };
+
+  console.log(
+  "Google Client ID:",
+  import.meta.env.VITE_GOOGLE_CLIENT_ID
+);
 
   return (
     <AuthCard>
@@ -143,6 +149,33 @@ const LoginForm = () => {
             OR
           </span>
         </div>
+
+        <div className="flex justify-center">
+  <GoogleLogin
+    onSuccess={async (credentialResponse) => {
+      try {
+        setError("");
+        setIsLoading(true);
+
+        await googleLogin(
+          credentialResponse.credential
+        );
+
+        navigate("/dashboard");
+      } catch (err) {
+        setError(
+          err.message ||
+            "Google Sign-In failed. Please try again."
+        );
+      } finally {
+        setIsLoading(false);
+      }
+    }}
+    onError={() => {
+      setError("Google Sign-In failed. Please try again.");
+    }}
+  />
+</div>
 
         <p className="text-center text-sm text-gray-500">
           Don't have an account?{" "}

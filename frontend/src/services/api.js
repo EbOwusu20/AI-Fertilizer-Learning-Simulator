@@ -42,4 +42,38 @@ export async function predictFertilizer(data) {
   }
 
   return result;
+} 
+
+export async function getSimulation(simulationId) {
+  const token = localStorage.getItem("access_token");
+
+  if (!token) {
+    throw new Error("You must be logged in.");
+  }
+
+  const response = await fetch(
+    `${API_URL}/history/${simulationId}`,
+    {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+
+  const result = await response.json();
+
+  if (!response.ok) {
+    if (response.status === 401) {
+      throw new Error(
+        "Your session has expired. Please log in again."
+      );
+    }
+
+    throw new Error(
+      result?.detail || "Unable to load simulation."
+    );
+  }
+
+  return result;
 }

@@ -1,14 +1,13 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
 
 import AuthCard from "./AuthCard";
 import InputField from "./InputField";
 import PasswordInput from "./PasswordInput";
-import { useAuth } from "../../context/AuthContext";
 
 const RegisterForm = () => {
   const navigate = useNavigate();
-
   const { register } = useAuth();
 
   const [formData, setFormData] = useState({
@@ -40,31 +39,45 @@ const RegisterForm = () => {
 
     setError("");
 
+    // Check password confirmation
     if (formData.password !== formData.confirmPassword) {
       setError("Passwords do not match.");
       return;
     }
 
+    // Check password length
     if (formData.password.length < 8) {
-  setError("Password must be at least 8 characters long.");
-  return;
-}
+      setError("Password must be at least 8 characters long.");
+      return;
+    }
+
+    // Check required fields
+    if (!formData.name.trim()) {
+      setError("Please enter your full name.");
+      return;
+    }
+
+    if (!formData.institution.trim()) {
+      setError("Please enter your institution.");
+      return;
+    }
 
     setIsLoading(true);
 
     try {
       await register(
         formData.name,
+        formData.institution,
         formData.email,
         formData.password
       );
 
-      // Account created and user authenticated
+      // Registration successful
+      // AuthContext has already stored the JWT
       navigate("/dashboard");
     } catch (err) {
       setError(
-        err.message ||
-          "Registration failed. Please try again."
+        err.message || "Registration failed. Please try again."
       );
     } finally {
       setIsLoading(false);
@@ -77,6 +90,7 @@ const RegisterForm = () => {
         onSubmit={handleSubmit}
         className="space-y-5"
       >
+        {/* Full Name */}
         <InputField
           label="Full Name"
           name="name"
@@ -85,6 +99,7 @@ const RegisterForm = () => {
           onChange={handleChange}
         />
 
+        {/* Institution */}
         <InputField
           label="Institution"
           name="institution"
@@ -93,6 +108,7 @@ const RegisterForm = () => {
           onChange={handleChange}
         />
 
+        {/* Email */}
         <InputField
           label="Email Address"
           name="email"
@@ -102,6 +118,7 @@ const RegisterForm = () => {
           onChange={handleChange}
         />
 
+        {/* Password */}
         <PasswordInput
           label="Password"
           name="password"
@@ -110,6 +127,7 @@ const RegisterForm = () => {
           placeholder="Create a password"
         />
 
+        {/* Confirm Password */}
         <PasswordInput
           label="Confirm Password"
           name="confirmPassword"
@@ -118,6 +136,7 @@ const RegisterForm = () => {
           placeholder="Confirm your password"
         />
 
+        {/* Terms */}
         <label className="flex items-start gap-2 text-sm text-gray-600">
           <input
             type="checkbox"
@@ -130,12 +149,14 @@ const RegisterForm = () => {
           </span>
         </label>
 
+        {/* Error message */}
         {error && (
           <div className="rounded-lg bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-600">
             {error}
           </div>
         )}
 
+        {/* Submit button */}
         <button
           type="submit"
           disabled={isLoading}
@@ -152,9 +173,12 @@ const RegisterForm = () => {
             disabled:cursor-not-allowed
           "
         >
-          {isLoading ? "Creating Account..." : "Create Account"}
+          {isLoading
+            ? "Creating Account..."
+            : "Create Account"}
         </button>
 
+        {/* Login link */}
         <p className="text-center text-sm text-gray-500">
           Already have an account?{" "}
 

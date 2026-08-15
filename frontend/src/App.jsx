@@ -7,6 +7,7 @@ import {
 
 import DashboardLayout from "./Components/layout/DashboardLayout";
 import ProtectedRoute from "./Components/common/ProtectedRoutes";
+import SimulationDetails from "./pages/SimulationDetails";
 
 import Landing from "./pages/Landing";
 import Dashboard from "./pages/Dashboard";
@@ -89,6 +90,11 @@ const App = () => {
             <Route
               path="/simulation"
               element={<Simulation />}
+            />
+
+            <Route
+              path="/simulation/:id"
+              element={<SimulationDetails />}
             />
 
             <Route
