@@ -36,3 +36,4 @@ passlib[bcrypt]
 python-jose[cryptography]
 google-auth
 python-dotenv
+psycopg2-binary
