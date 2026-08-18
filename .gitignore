@@ -218,3 +218,6 @@ __marimo__/
 .streamlit/secrets.toml
 app.db
 node_modules
+.env
+.env.local
+.env.production
