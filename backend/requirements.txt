@@ -32,7 +32,8 @@ typing_extensions==4.16.0
 tzdata==2026.3
 uvicorn==0.52.1
 sqlalchemy
-passlib[bcrypt]
+passlib==1.7.4
+bcrypt==4.0.1
 python-jose[cryptography]
 google-auth
 python-dotenv
